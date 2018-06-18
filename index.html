@@ -25,6 +25,21 @@
         for (var file of chunk.files) {
           if (file.match(/\.(js|css)$/)) { %>
     <link rel="<%= chunk.initial?'preload':'prefetch' %>" href="<%= htmlWebpackPlugin.files.publicPath + file %>" as="<%= file.match(/\.css$/)?'style':'script' %>"><% }}} %>
+  
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async=""></script>
+    <script>
+      var OneSignal = window.OneSignal || [];
+      OneSignal.push(function() {
+        OneSignal.init({
+          appId: "17056444-a80b-40d4-9388-1a9a751b0f31",
+          autoRegister: false,
+          notifyButton: {
+            enable: true,
+          },
+        });
+      });
+    </script>
+  
   </head>
   <body>
     <noscript>

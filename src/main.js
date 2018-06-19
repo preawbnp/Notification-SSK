@@ -52,7 +52,10 @@ new Vue({
 })
 
 var getUnfinishedStage = function () {
-  return db.collection('users').where('stage', '==', 'unfinished').get()
+  var userRef = db.collection('users')
+  var unfinishedUser = userRef.where('stage', '==', 'unfinished')
+
+  return unfinishedUser.get()
   .then((snapshot) => {
     snapshot.forEach((collections) => {
       console.log(collections.id, '=>', collections.data());

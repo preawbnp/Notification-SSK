@@ -25,23 +25,23 @@ const settings = {
 db.settings(settings);
 
 // Add data to firestore
-var docRef = db.collection('users').doc('name');
-var setAda = docRef.set({
-  first: 'DD',
-  last: 'Lovelace',
-  born: 1815,
-});
+// var docRef = db.collection('users').doc('name');
+// var setAda = docRef.set({
+//   first: 'DD',
+//   last: 'Lovelace',
+//   born: 1815,
+// });
 
 // Read data to firestore
-db.collection('users').get()
-  .then((snapshot) => {
-    snapshot.forEach((doc) => {
-      console.log(doc.id, '=>', doc.data());
-    });
-  })
-  .catch((err) => {
-    console.log('Error getting documents', err);
-  });
+// db.collection('users').get()
+//   .then((snapshot) => {
+//     snapshot.forEach((doc) => {
+//       console.log(doc.id, '=>', doc.data());
+//     });
+//   })
+//   .catch((err) => {
+//     console.log('Error getting documents', err);
+//   });
 
 /* eslint-disable no-new */
 new Vue({
@@ -50,3 +50,16 @@ new Vue({
   template: '<App/>',
   components: { App }
 })
+
+var getUnfinishedStage = function () {
+  return db.collection('users').where('stage', '==', 'unfinished').get()
+  .then((snapshot) => {
+    snapshot.forEach((collections) => {
+      console.log(collections.id, '=>', collections.data());
+    });
+  })
+  .catch((err) => {
+    console.log('Error getting unfinished stage', err);
+  });
+}
+

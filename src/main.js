@@ -53,15 +53,24 @@ new Vue({
 })
 
 //Get user's unfinished stage
+var storeStr = ""
+var isFirst = true
+
 var getUnfinishedStage = function () {
   var userRef = db.collection('users')
-  var unfinishedUser = userRef.where('stage', '==', 'unfinished')
-
-  return unfinishedUser.get()
+  var unfinishedUser = userRef.where('status', '==', 'allow')
+  
+  unfinishedUser.get()
   .then((snapshot) => {
     snapshot.forEach((collections) => {
-      console.log(collections.id, '=>', collections.data());
+      if(isFirst) {
+        storeStr += collections.data().store_id
+        isFirst = false
+      } else {
+        storeStr += "," + collections.data().store_id
+      }
     });
+    console.log(storeStr);
   })
   .catch((err) => {
     console.log('Error getting unfinished stage', err);
@@ -80,6 +89,4 @@ var getSellsukiUser = function (store_id) {
     console.log(error);
   });
 }
-
-
 

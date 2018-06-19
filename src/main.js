@@ -3,7 +3,6 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
-import { request } from 'http'
 import axios from 'axios'
 
 Vue.config.productionTip = false
@@ -54,8 +53,8 @@ new Vue({
 })
 
 //Get user data from sellsuki API
-var getSellsukiUser = function () {
-  axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=2&store_ids[]=1')
+var getSellsukiUser = function (store_id) {
+  axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)
   .then(function (response) {
     console.log(response);
     console.log(response.data.results)
@@ -65,6 +64,6 @@ var getSellsukiUser = function () {
     console.log(error);
   });
 }
-var sellsukiUser = getSellsukiUser()
+getSellsukiUser(store_id)
 
 

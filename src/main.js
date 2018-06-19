@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import axios from 'axios'
 
 Vue.config.productionTip = false
 const firebase = require("firebase");
@@ -51,6 +52,7 @@ new Vue({
   components: { App }
 })
 
+//Get user's unfinished stage
 var getUnfinishedStage = function () {
   var userRef = db.collection('users')
   var unfinishedUser = userRef.where('stage', '==', 'unfinished')
@@ -65,4 +67,19 @@ var getUnfinishedStage = function () {
     console.log('Error getting unfinished stage', err);
   });
 }
+
+//Get user data from sellsuki API
+var getSellsukiUser = function (store_id) {
+  axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)
+  .then(function (response) {
+    console.log(response);
+    console.log(response.data.results)
+    return response.data.results
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+
+
 

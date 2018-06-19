@@ -3,6 +3,7 @@
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import axios from 'axios'
 
 Vue.config.productionTip = false
 const firebase = require("firebase");
@@ -25,12 +26,12 @@ const settings = {
 db.settings(settings);
 
 // Add data to firestore
-var docRef = db.collection('users').doc('name');
-var setAda = docRef.set({
-  first: 'DD',
-  last: 'Lovelace',
-  born: 1815,
-});
+// var docRef = db.collection('users').doc('name');
+// var setAda = docRef.set({
+//   first: 'DD',
+//   last: 'Lovelace',
+//   born: 1815,
+// });
 
 // Read data to firestore
 db.collection('users').get()
@@ -50,3 +51,19 @@ new Vue({
   template: '<App/>',
   components: { App }
 })
+
+//Get user data from sellsuki API
+var getSellsukiUser = function (store_id) {
+  axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)
+  .then(function (response) {
+    console.log(response);
+    console.log(response.data.results)
+    return response.data.results
+  })
+  .catch(function (error) {
+    console.log(error);
+  });
+}
+getSellsukiUser(store_id)
+
+

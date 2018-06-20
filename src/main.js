@@ -4,6 +4,8 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+import { resolve } from 'url';
+import { rejects } from 'assert';
 
 Vue.config.productionTip = false
 const firebase = require("firebase");
@@ -56,30 +58,35 @@ new Vue({
 var storeStr = ""
 var isFirst = true
 
-var getUnfinishedStage = function () {
+function getUnfinishedStage () {
   var userRef = db.collection('users')
   var unfinishedUser = userRef.where('status', '==', 'allow')
   
-  unfinishedUser.get()
-  .then((snapshot) => {
-    snapshot.forEach((collections) => {
-      if(isFirst) {
-        storeStr += collections.data().store_id
-        isFirst = false
-      } else {
-        storeStr += "," + collections.data().store_id
-      }
-    });
-    console.log(storeStr)
-    return storeStr
+  return new Promise((resolve, reject) => {
+    resolve(
+      unfinishedUser.get()
+        .then((snapshot) => {
+          snapshot.forEach((collections) => {
+            if(isFirst) {
+              storeStr += collections.data().store_id
+              isFirst = false
+            } else {
+              storeStr += "," + collections.data().store_id
+            }
+          });
+          console.log(storeStr)
+          return storeStr
+        })
+        .catch((err) => {
+          console.log('Error getting unfinished stage', err);
+        })
+    )
   })
-  .catch((err) => {
-    console.log('Error getting unfinished stage', err);
-  });
 }
 
 //Get user data from sellsuki API
-var getSellsukiUser = function (store_id) {
+async function getSellsukiUser () {
+  var store_id = await getUnfinishedStage()
   axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)
   .then(function (response) {
     console.log(response);
@@ -90,4 +97,3 @@ var getSellsukiUser = function (store_id) {
     console.log(error);
   });
 }
-

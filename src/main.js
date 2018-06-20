@@ -57,11 +57,10 @@ new Vue({
 //Get user's unfinished stage
 var storeStr = ""
 var isFirst = true
+var userRef = db.collection('users')
+var unfinishedUser = userRef.where('status', '==', 'allow')
 
 function getUnfinishedStage () {
-  var userRef = db.collection('users')
-  var unfinishedUser = userRef.where('status', '==', 'allow')
-  
   return new Promise((resolve, reject) => {
     resolve(
       unfinishedUser.get()
@@ -85,15 +84,31 @@ function getUnfinishedStage () {
 }
 
 //Get user data from sellsuki API
-async function getSellsukiUser () {
+function getSellsukiUser (store_id) {
+  return new Promise((resolve, reject) => {
+    resolve(
+      axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)
+      .then(function (response) {
+        // console.log(response);
+        console.log(response.data.results)
+        return response
+      })
+      .catch(function (error) {
+        console.log(error);
+      })
+    )})
+}
+
+//Update data to Firestore
+async function updateFirestore() {
   var store_id = await getUnfinishedStage()
-  axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)
-  .then(function (response) {
-    console.log(response);
-    console.log(response.data.results)
-    return response.data.results
+  var users = await getSellsukiUser(store_id)
+
+  users.data.results.forEach((user) => {
+    if (user.count_product > 1 && user.count_store_payment_channel > 0 && user.count_store_shipping_type > 1) {
+      userRef.doc(user.store_id).update({
+        status: 'finished'
+      })
+    }
   })
-  .catch(function (error) {
-    console.log(error);
-  });
 }

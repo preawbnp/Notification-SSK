@@ -70,7 +70,8 @@ var getUnfinishedStage = function () {
         storeStr += "," + collections.data().store_id
       }
     });
-    console.log(storeStr);
+    console.log(storeStr)
+    return storeStr
   })
   .catch((err) => {
     console.log('Error getting unfinished stage', err);

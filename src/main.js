@@ -4,11 +4,11 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
-import { resolve } from 'url';
-import { rejects } from 'assert';
+import { resolve } from 'url'
+import { rejects } from 'assert'
 
 Vue.config.productionTip = false
-const firebase = require("firebase");
+const firebase = require("firebase")
 
 firebase.initializeApp({
   apiKey: "AIzaSyCWJOdnyasNUL7xAWi83WDHihsKj92N7R8",
@@ -20,38 +20,38 @@ firebase.initializeApp({
 });
 
 // Initialize Cloud Firestore through Firebase
-var db = firebase.firestore();
-const firestore = firebase.firestore();
+var db = firebase.firestore()
+const firestore = firebase.firestore()
 const settings = { 
   timestampsInSnapshots: true
-};
-db.settings(settings);
+}
+db.settings(settings)
 
 // Add data to firestore
-// var docRef = db.collection('users').doc('name');
+// var docRef = db.collection('users').doc('name')
 // var setAda = docRef.set({
 //   first: 'DD',
 //   last: 'Lovelace',
 //   born: 1815,
-// });
+// })
 
 // Read data to firestore
 // db.collection('users').get()
 //   .then((snapshot) => {
 //     snapshot.forEach((doc) => {
-//       console.log(doc.id, '=>', doc.data());
-//     });
+//       console.log(doc.id, '=>', doc.data())
+//     })
 //   })
 //   .catch((err) => {
-//     console.log('Error getting documents', err);
-//   });
+//     console.log('Error getting documents', err)
+//   })
 
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   router,
   template: '<App/>',
-  components: { App },
+  components: { App }
 })
 
 //Get user's unfinished stage
@@ -77,7 +77,7 @@ function getUnfinishedStage () {
           return storeStr
         })
         .catch((err) => {
-          console.log('Error getting unfinished stage', err);
+          console.log('Error getting unfinished stage', err)
         })
     )
   })
@@ -89,12 +89,12 @@ function getSellsukiUser (store_id) {
     resolve(
       axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)
       .then(function (response) {
-        // console.log(response);
+        // console.log(response)
         console.log(response.data.results)
         return response
       })
       .catch(function (error) {
-        console.log(error);
+        console.log(error)
       })
     )})
 }
@@ -128,22 +128,22 @@ var sendNotification = function(data) {
     headers: headers
   };
   
-  var https = require('https');
+  var https = require('https')
   var req = https.request(options, function(res) {  
     res.on('data', function(data) {
-      console.log("Response:");
-      console.log(JSON.parse(data));
-    });
-  });
+      console.log("Response:")
+      console.log(JSON.parse(data))
+    })
+  })
   
   req.on('error', function(e) {
-    console.log("ERROR:");
-    console.log(e);
-  });
+    console.log("ERROR:")
+    console.log(e)
+  })
   
-  req.write(JSON.stringify(data));
-  req.end();
-};
+  req.write(JSON.stringify(data))
+  req.end()
+}
 
 function createMessage(content, heading, url, player_id) {
   var message = { 
@@ -152,8 +152,8 @@ function createMessage(content, heading, url, player_id) {
     headings: {"en": heading},
     // include_player_ids: [player_id]
     included_segments: ["All"]
-  };
+  }
 }
 
-// sendNotification();
+// sendNotification()
 // createMessage(content, heading, url, player_id)

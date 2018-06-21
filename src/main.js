@@ -147,14 +147,15 @@ var sendNotification = function(data) {
 }
 
 //Create a message to send notification
-async function createMessage(content, heading, url, player_id) {
+async function createMessage(heading, content, url, player_id) {
   var message = { 
     app_id: "17056444-a80b-40d4-9388-1a9a751b0f31",
-    contents: {"en": content},
     headings: {"en": heading},
+    contents: {"en": content},
     // include_player_ids: [player_id]
     included_segments: ["All"]
   }
+  sendNotification(message)
 }
 
 //Calculate user stage from Sellsuki
@@ -164,15 +165,15 @@ function calculateUserStage (store_id) {
       axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)        
       .then(function (response) {
         var stage = ''
-        var user = response.data
+        var user = response.data.results[0]
 
-        if (user.results[0].count_product <= 1){
+        if (user.count_product <= 1){
           stage = '1'
-        } else if (user.results[0].count_product > 1 && 
-          user.results[0].count_store_payment_channel == 0) {
+        } else if (user.count_product > 1 && 
+          user.count_store_payment_channel == 0) {
           stage = '2'
-        } else if (user.results[0].count_store_payment_channel > 0 && 
-          user.results[0].count_store_shipping_type <= 1) {
+        } else if (user.count_store_payment_channel > 0 && 
+          user.count_store_shipping_type <= 1) {
           stage = '3'
         } else {
           stage = 'done'

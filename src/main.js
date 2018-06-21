@@ -67,10 +67,10 @@ function getUnfinishedStage () {
         .then((snapshot) => {
           snapshot.forEach((collections) => {
             if(isFirst) {
-              storeStr += collections.data().store_id
+              storeStr += collections.data().storeId
               isFirst = false
             } else {
-              storeStr += "," + collections.data().store_id
+              storeStr += "," + collections.data().storeId
             }
           });
           // console.log(storeStr)
@@ -84,10 +84,10 @@ function getUnfinishedStage () {
 }
 
 //Get user data from sellsuki API
-function getSellsukiUser (store_id) {
+function getSellsukiUser (storeId) {
   return new Promise((resolve, reject) => {
     resolve(
-      axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)
+      axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + storeId)
       .then(function (response) {
         // console.log(response)
         // console.log(response.data.result)
@@ -102,12 +102,12 @@ function getSellsukiUser (store_id) {
 
 //Update data to Firestore
 async function updateFirestore() {
-  var store_id = await getUnfinishedStage()
-  var users = await getSellsukiUser(store_id)
+  var storeId = await getUnfinishedStage()
+  var users = await getSellsukiUser(storeId)
 
   users.data.results.forEach((user) => {
     if (user.count_product > 1 && user.count_store_payment_channel > 0 && user.count_store_shipping_type > 1) {
-      userRef.doc(user.store_id).update({
+      userRef.doc(user.storeId).update({
         status: 'finished'
       })
     }
@@ -147,22 +147,22 @@ var sendNotification = function(data) {
 }
 
 //Create a message to send notification
-async function createMessage(heading, content, url, player_id) {
+async function createMessage(heading, content, url, playerId) {
   var message = { 
     app_id: "17056444-a80b-40d4-9388-1a9a751b0f31",
     headings: {"en": heading},
     contents: {"en": content},
-    // include_player_ids: [player_id]
+    // include_player_ids: [playerId]
     included_segments: ["All"]
   }
   sendNotification(message)
 }
 
 //Calculate user stage from Sellsuki
-function calculateUserStage (store_id) {
+function calculateUserStage (storeId) {
   return new Promise((resolve, reject) => {
     resolve(
-      axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)        
+      axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + storeId)        
       .then(function (response) {
         var stage = ''
         var user = response.data.results[0]
@@ -187,7 +187,7 @@ function calculateUserStage (store_id) {
 }
 
 //Template message
-async function templateMessage(stage, player_id) {
+async function templateMessage(stage, playerId) {
   var heading = ''
   var content = ''
   var url = ''
@@ -202,5 +202,5 @@ async function templateMessage(stage, player_id) {
     heading = 'อย่าลืมเพิ่มวิธีจัดส่งและค่าส่งสินค้าด้วยนะ'
     content = 'เพิ่มวิธีจัดส่งสินค้าพร้อมค่าจัดส่งแบบต่างๆ ให้ลูกค้าเลือกรับของได้ตามสะดวก'
   } 
-  createMessage(heading, content, url, player_id)
+  createMessage(heading, content, url, playerId)
 }

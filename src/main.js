@@ -25,23 +25,23 @@ const settings = {
 db.settings(settings);
 
 // Add data to firestore
-var docRef = db.collection('users').doc('name');
-var setAda = docRef.set({
-  first: 'DD',
-  last: 'Lovelace',
-  born: 1815,
-});
+// var docRef = db.collection('users').doc('name');
+// var setAda = docRef.set({
+//   first: 'DD',
+//   last: 'Lovelace',
+//   born: 1815,
+// });
 
 // Read data to firestore
-db.collection('users').get()
-  .then((snapshot) => {
-    snapshot.forEach((doc) => {
-      console.log(doc.id, '=>', doc.data());
-    });
-  })
-  .catch((err) => {
-    console.log('Error getting documents', err);
-  });
+// db.collection('users').get()
+//   .then((snapshot) => {
+//     snapshot.forEach((doc) => {
+//       console.log(doc.id, '=>', doc.data());
+//     });
+//   })
+//   .catch((err) => {
+//     console.log('Error getting documents', err);
+//   });
 
 /* eslint-disable no-new */
 new Vue({
@@ -53,11 +53,6 @@ new Vue({
 
 
 //Send notification
-
-var player_id = ""
-var headings = "Test"
-var contents = "From send notification method"
-
 var sendNotification = function(data) {
   var headers = {
     "Content-Type": "application/json; charset=utf-8",
@@ -89,11 +84,15 @@ var sendNotification = function(data) {
   req.end();
 };
 
-var message = { 
-  app_id: "17056444-a80b-40d4-9388-1a9a751b0f31",
-  contents: {"en": contents},
-  headings: {"en": headings},
-  // include_player_ids: [player_id]
-  included_segments: ["All"]
-};
-sendNotification(message);
+function createMessage(content, heading, url, player_id) {
+  var message = { 
+    app_id: "17056444-a80b-40d4-9388-1a9a751b0f31",
+    contents: {"en": content},
+    headings: {"en": heading},
+    // include_player_ids: [player_id]
+    included_segments: ["All"]
+  };
+}
+
+// sendNotification();
+// createMessage(content, heading, url, player_id)

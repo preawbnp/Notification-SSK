@@ -51,7 +51,7 @@ new Vue({
   el: '#app',
   router,
   template: '<App/>',
-  components: { App }
+  components: { App },
 })
 
 //Get user's unfinished stage
@@ -112,3 +112,48 @@ async function updateFirestore() {
     }
   })
 }
+
+//Send notification
+var sendNotification = function(data) {
+  var headers = {
+    "Content-Type": "application/json; charset=utf-8",
+    "Authorization": "Basic ZjhhZjViNjYtYmUwZS00Zjg0LTk3NmQtYzQ1ZmM4ZDVhOGI2"
+  };
+  
+  var options = {
+    host: "onesignal.com",
+    port: 443,
+    path: "/api/v1/notifications",
+    method: "POST",
+    headers: headers
+  };
+  
+  var https = require('https');
+  var req = https.request(options, function(res) {  
+    res.on('data', function(data) {
+      console.log("Response:");
+      console.log(JSON.parse(data));
+    });
+  });
+  
+  req.on('error', function(e) {
+    console.log("ERROR:");
+    console.log(e);
+  });
+  
+  req.write(JSON.stringify(data));
+  req.end();
+};
+
+function createMessage(content, heading, url, player_id) {
+  var message = { 
+    app_id: "17056444-a80b-40d4-9388-1a9a751b0f31",
+    contents: {"en": content},
+    headings: {"en": heading},
+    // include_player_ids: [player_id]
+    included_segments: ["All"]
+  };
+}
+
+// sendNotification();
+// createMessage(content, heading, url, player_id)

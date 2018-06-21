@@ -73,7 +73,7 @@ function getUnfinishedStage () {
               storeStr += "," + collections.data().store_id
             }
           });
-          console.log(storeStr)
+          // console.log(storeStr)
           return storeStr
         })
         .catch((err) => {
@@ -90,13 +90,14 @@ function getSellsukiUser (store_id) {
       axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)
       .then(function (response) {
         // console.log(response)
-        console.log(response.data.results)
+        // console.log(response.data.result)
         return response
       })
       .catch(function (error) {
         console.log(error)
       })
-    )})
+    )
+  })
 }
 
 //Update data to Firestore
@@ -145,7 +146,8 @@ var sendNotification = function(data) {
   req.end()
 }
 
-function createMessage(content, heading, url, player_id) {
+//Create a message to send notification
+async function createMessage(content, heading, url, player_id) {
   var message = { 
     app_id: "17056444-a80b-40d4-9388-1a9a751b0f31",
     contents: {"en": content},
@@ -155,5 +157,30 @@ function createMessage(content, heading, url, player_id) {
   }
 }
 
-// sendNotification()
-// createMessage(content, heading, url, player_id)
+//Calculate user stage from Sellsuki
+function calculateUserStage (store_id) {
+  return new Promise((resolve, reject) => {
+    resolve(
+      axios.get('http://192.168.1.254:8003/store/get-store-notification?store_ids[]=' + store_id)        
+      .then(function (response) {
+        var stage = ''
+        var user = response.data
+
+        if (user.results[0].count_product <= 1){
+          stage = '1'
+        } else if (user.results[0].count_product > 1 && 
+          user.results[0].count_store_payment_channel == 0) {
+          stage = '2'
+        } else if (user.results[0].count_store_payment_channel > 0 && 
+          user.results[0].count_store_shipping_type <= 1) {
+          stage = '3'
+        } else {
+          stage = 'done'
+        }
+          return stage
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+  )})
+}

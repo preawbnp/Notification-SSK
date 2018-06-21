@@ -185,3 +185,22 @@ function calculateUserStage (store_id) {
       })
   )})
 }
+
+//Template message
+async function templateMessage(stage, player_id) {
+  var heading = ''
+  var content = ''
+  var url = ''
+
+  if (stage == '1') {
+    heading = 'อยากเริ่มขาย ต้องเพิ่มสินค้าก่อนนะ!'
+    content = 'เริ่มการขายผ่าน Sellsuki โดยการเพิ่มสินค้าในสต๊อกสินค้า'
+  } else if (stage == '2') {
+    heading = 'เพิ่มช่องทางชำระเงินสำหรับลูกค้าหรือยัง?'
+    content = 'เพิ่มบัญชีธนาคารหรือช่องทางอื่นๆ เพื่อรับชำระเงินจากลูกค้าหลังยืนยันออเดอร์'
+  } else if (stage == '3') {
+    heading = 'อย่าลืมเพิ่มวิธีจัดส่งและค่าส่งสินค้าด้วยนะ'
+    content = 'เพิ่มวิธีจัดส่งสินค้าพร้อมค่าจัดส่งแบบต่างๆ ให้ลูกค้าเลือกรับของได้ตามสะดวก'
+  } 
+  createMessage(heading, content, url, player_id)
+}

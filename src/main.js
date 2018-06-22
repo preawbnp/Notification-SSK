@@ -27,6 +27,131 @@ const settings = {
 }
 db.settings(settings)
 
+//ploy
+var storeid;
+var get_player_id = "UserIDgetfromFirebase";
+// var OneSignal = window.OneSignal || [];
+// OneSignal.push(function() {
+//   OneSignal.init({
+//     appId: "17056444-a80b-40d4-9388-1a9a751b0f31",
+//     autoRegister:false,
+//     welcomeNotification: {
+//       "title": "Wellcome to Sellsuki",
+//       "message": "p[flpglpdlgpkfdgkdpogkodfkpokgokdfkokgokfogkdkgkofdkpkogpfdkgkofkogkofpkgopkdogkpodfkogpopkfdokdgokfokgoppf",
+//       //"url": "" /* Leave commented for the notification to not open a window on Chrome and Firefox (on Safari, it opens to your webpage) */
+//     },
+//     notifyButton: {
+//       enable: true,
+//       displayPredicate: function() { ////////////////////////////////////////////////////hide the ring when subscribed
+//         return OneSignal.isPushNotificationsEnabled()
+//         .then(function(isPushEnabled) {
+//           /* The user is subscribed, so we want to return "false" to hide the Subscription Bell */
+//           return !isPushEnabled;
+//         });
+//       },
+//       showCredit: false,
+//       size: "large"
+//     },
+//   });
+// });
+OneSignal.push(async function() {
+  OneSignal.getUserId(async function(userId) {
+    document.getElementById("demo").innerHTML=userId;///////////////////////////PLAYER_ID
+    var storeid = '1'
+    var playerId = await getPlayerId(storeid) 
+    console.log("PlayerId: ",playerId);
+
+    if ((playerId == null && userId != null)){
+      console.log('No such document!')
+      var adduser = user.doc(storeid).set({playerId: userId,storeId: storeid,}); //ploy is store_id
+    }else if(userId == null){
+      console.log('UserID not defind yet')
+    }else if(playerId != null && (playerId != userId)){
+      db.collection("users").doc(storeid).update({ 
+        ///change ploy to store_id that get from cookie
+        "playerId": userId
+      }).then(function() {
+        console.log("Document successfully updated!")
+      })
+      //var adduser = user.doc("ploy").set({player_id: userId,store_id:"ploy",}); //ploy is store_id
+    }else if(playerId != null){
+      console.log('have this user in data already!')
+    }
+  })
+})
+
+//Action show in html
+  function onManageWebPushSubscriptionButtonClicked(event) {
+    getSubscriptionState().then(function(state) {
+        if (state.isPushEnabled) {
+            /* Subscribed, opt them out */
+            console.log("1");
+            OneSignal.setSubscription(false);
+            //update to database
+        } else {
+            if (state.isOptedOut) {
+                /* Opted out, opt them back in */
+              OneSignal.setSubscription(true);
+              console.log("2");
+            } else {
+                /* Unsubscribed, subscribe them */  //POPUP TO ALLOW
+                OneSignal.registerForPushNotifications();
+                console.log("3");
+            }
+        }
+    });
+    event.preventDefault();
+  }
+  function updateMangeWebPushSubscriptionButton(buttonSelector) {
+    //var hideWhenSubscribed = false;
+    var subscribeText = "Subscribe";
+    //var unsubscribeText = "Unsubscribe from Notifications";
+    getSubscriptionState().then(function(state) {
+        //var buttonText = !state.isPushEnabled || state.isOptedOut ? subscribeText : unsubscribeText;
+        var element = document.querySelector(buttonSelector);
+        if (element === null) {
+            return;
+        }
+        element.removeEventListener('click', onManageWebPushSubscriptionButtonClicked);
+        element.addEventListener('click', onManageWebPushSubscriptionButtonClicked);
+        element.textContent = subscribeText;/// set button text
+        //if (state.hideWhenSubscribed && state.isPushEnabled) {
+        if (state.isPushEnabled) { // if already subscript it will disapppear
+            element.style.display = "none";
+            //element.style.display = "";
+        } else {
+            element.style.display = "";
+        }
+    });
+  }
+  function getSubscriptionState() {
+    return Promise.all([
+      OneSignal.isPushNotificationsEnabled(),
+      OneSignal.isOptedOut()
+    ]).then(function(result) {
+        var isPushEnabled = result[0];
+        var isOptedOut = result[1];
+        return {
+            isPushEnabled: isPushEnabled,
+            isOptedOut: isOptedOut
+        };
+    });
+  }
+  // function addNewUser() {
+  var buttonSelector = "#my-notification-button";
+  /* This example assumes you've already initialized OneSignal */
+  OneSignal.push(function() {
+      // If we're on an unsupported browser, do nothing
+      if (!OneSignal.isPushNotificationsSupported()) {
+          return;
+      }
+      updateMangeWebPushSubscriptionButton(buttonSelector);
+      OneSignal.on("subscriptionChange", function(isSubscribed) {
+          /* If the user's subscription state changes during the page's session, update the button text */
+          updateMangeWebPushSubscriptionButton(buttonSelector);
+      });
+  });
+
 // Add data to firestore
 // var docRef = db.collection('users').doc('name')
 // var setAda = docRef.set({
@@ -243,4 +368,15 @@ async function createMessage(stage, storeId) {
   sendNotification(message)
 }
 
-updateFirestore()
+// updateFirestore()
+setInterval(function() {
+  var d = new Date()
+  var hours = d.getHours()
+  var minutes = d.getMinutes()
+  var seconds = d.getSeconds()
+  if(hours == 10 && minutes == 0 && seconds == 0) {
+    console.log("Time to noti")
+    updateFirestore()
+  }
+  console.log(hours + '.' + minutes + '.' + seconds)
+},1000)

@@ -1,7 +1,10 @@
 <template>
   <div class="hello">
-    <button>Register</button>
-    <button>Notification</button>
+    <div id="app"> </div>
+      <div align="center" style="margin-top:50px;">
+      <button  id="my-notification-button" style="margin-bottom:50px;align-content: center;text-align:justify;background-color:dodgerblue;display:'none'" >Subscribe</button><br>
+      PlayerId: <p id="demo">userID</p>
+      </div>
   </div>
 </template>
 

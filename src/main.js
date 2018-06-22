@@ -54,41 +54,31 @@ var get_player_id = "UserIDgetfromFirebase";
 //     },
 //   });
 // });
-OneSignal.push(function() {
-  OneSignal.getUserId(function(userId) {
+OneSignal.push(async function() {
+  OneSignal.getUserId(async function(userId) {
     document.getElementById("demo").innerHTML=userId;///////////////////////////PLAYER_ID
-    var user = db.collection('users');
-    user.where('storeId', '==',"1").get()
-      .then(doc =>{
-        console.log("doc.size : ",doc.size);
-        doc.forEach(function(element) {
-          if(doc.size>0){
-            get_player_id = element.data().playerId;
-          }
-        });
-        console.log("get player_id= ",get_player_id);
+    var storeid = '1'
+    var playerId = await getPlayerId(storeid) 
+    console.log("PlayerId: ",playerId);
 
-        if ((doc.size==0 && userId!=null)){
-          console.log('No such document!');
-          var adduser = user.doc(storeid).set({playerId: userId,storeId: storeid,}); //ploy is store_id
-        }else if(userId==null){
-          console.log('UserID not defind yet');
-        }else if(doc.size>0&&(get_player_id!=userId)){
-          db.collection("users").doc(storeid).update({ ///change ploy to store_id that get from cookie
-            "playerId": userId
-          }).then(function() {
-            console.log("Document successfully updated!");
-          });
-          //var adduser = user.doc("ploy").set({player_id: userId,store_id:"ploy",}); //ploy is store_id
-        }else if(doc.size>0){
-          console.log('have this user in data already!');
-        }
+    if ((playerId == null && userId != null)){
+      console.log('No such document!')
+      var adduser = user.doc(storeid).set({playerId: userId,storeId: storeid,}); //ploy is store_id
+    }else if(userId == null){
+      console.log('UserID not defind yet')
+    }else if(playerId != null && (playerId != userId)){
+      db.collection("users").doc(storeid).update({ 
+        ///change ploy to store_id that get from cookie
+        "playerId": userId
+      }).then(function() {
+        console.log("Document successfully updated!")
       })
-      .catch(err => {
-        console.log('Error getting document', err);
-      });
-  });
-});
+      //var adduser = user.doc("ploy").set({player_id: userId,store_id:"ploy",}); //ploy is store_id
+    }else if(playerId != null){
+      console.log('have this user in data already!')
+    }
+  })
+})
 
 //Action show in html
   function onManageWebPushSubscriptionButtonClicked(event) {

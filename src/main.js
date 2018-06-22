@@ -369,3 +369,14 @@ async function createMessage(stage, storeId) {
 }
 
 // updateFirestore()
+setInterval(function() {
+  var d = new Date()
+  var hours = d.getHours()
+  var minutes = d.getMinutes()
+  var seconds = d.getSeconds()
+  if(hours == 10 && minutes == 0 && seconds == 0) {
+    console.log("Time to noti")
+    updateFirestore()
+  }
+  console.log(hours + '.' + minutes + '.' + seconds)
+},1000)

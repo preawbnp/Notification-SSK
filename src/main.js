@@ -63,7 +63,10 @@ OneSignal.push(async function() {
 
     if ((playerId == null && userId != null)){
       console.log('No such document!')
-      var adduser = user.doc(storeid).set({playerId: userId,storeId: storeid,}); //ploy is store_id
+      var adduser = user
+        .doc(storeid)
+        .set({playerId: userId,storeId: storeid,}); //ploy is store_id
+        
     }else if(userId == null){
       console.log('UserID not defind yet')
     }else if(playerId != null && (playerId != userId)){
@@ -151,25 +154,6 @@ OneSignal.push(async function() {
           updateMangeWebPushSubscriptionButton(buttonSelector);
       });
   });
-
-// Add data to firestore
-// var docRef = db.collection('users').doc('name')
-// var setAda = docRef.set({
-//   first: 'DD',
-//   last: 'Lovelace',
-//   born: 1815,
-// })
-
-// Read data to firestore
-// db.collection('users').get()
-//   .then((snapshot) => {
-//     snapshot.forEach((doc) => {
-//       console.log(doc.id, '=>', doc.data())
-//     })
-//   })
-//   .catch((err) => {
-//     console.log('Error getting documents', err)
-//   })
 
 /* eslint-disable no-new */
 new Vue({
